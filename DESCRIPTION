@@ -1,0 +1,15 @@
+Package: magnitudeplot
+Title: Create Magnitude Plots for DALYs
+Version: 0.1.0
+Authors@R: person("Horacio", "Chacon Torrico", email = "hchacont@uw.edu", role = c("aut", "cre"))
+Description: Creates magnitude plots in log10 scale to depict cumulative disability adjusted life years (DALYs) lost due to different risks.
+Depends: R (>= 3.5.0)
+Imports: 
+    ggplot2,
+    dplyr,
+    scales,
+    ggrepel
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.1
