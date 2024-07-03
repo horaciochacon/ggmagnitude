@@ -19,7 +19,7 @@
 #' @import ggrepel
 magnitude_plot <- function(
     data, value_col, name_col, font_col = NULL, is_log10 = TRUE,
-    min_value = 10, max_value = 10^13, ...
+    min_value = 10, max_value = 10^12, ...
     ) {
   # Prepare data
   prepared_data <- prepare_data(data, value_col, name_col, font_col, is_log10)
@@ -49,15 +49,10 @@ magnitude_plot <- function(
       panel.grid = element_blank(),
       panel.border = element_blank(),
       axis.line.x = element_line(color = "black"),
-      axis.text.x = element_text(size = 10)
+      axis.text.x = element_text(size = 10),
+      plot.margin = unit(c(1,1,1,1), 'cm')
     ) +
-    coord_cartesian(ylim = c(1, plot_height), clip = "off") +  # Ensure labels are not clipped
-    scale_x_continuous(
-      trans = "log10",
-      breaks = 10^(6:12),
-      labels = scales::trans_format("log10", scales::math_format(10^.x)),
-      expand = c(0, 0)
-    )
+    coord_cartesian(ylim = c(1, plot_height), clip = "off")
 
   # Return the final plot
   p

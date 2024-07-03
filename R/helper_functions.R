@@ -1,23 +1,27 @@
 create_magnitude_scale <- function(min_value, max_value) {
-  # Define the number of colors in the palette
-  num_colors <- 12
+  # Define the values
+  values <- 10^(0:12)
 
-  # Create the color palette from green to yellow to red
-  color_palette <- colorRampPalette(c("darkgreen", "yellow", "darkred"))(num_colors)
+  # Create the color palette from yellow to red
+  color_palette <- colorRampPalette(c("darkgreen", "yellow", "darkred"))(12)
 
-  # Define the values from 10 to 10^12 on a log scale
-  values <- c(10, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12)
-  val <- c(30, 3e2, 3e3, 3e4, 3e5, 3e6, 3e7, 3e8, 3e9, 3e10, 3e11, 3e12)
+  # Create a data frame for geom_rect
+  df <- data.frame(
+    xmin = head(values, -1),
+    xmax = tail(values, -1),
+    ymin = 0,
+    ymax = 1,
+    fill = color_palette
+  )
 
-  # Create a data frame that maps the values to colors
-  df <- data.frame(Values = val, Colors = color_palette)
+  df <- df %>% filter(xmin >=  min_value, xmax <= max_value)
 
   list(
-    geom_tile(
-      aes(
-        width = diff(c(0, log10(values))),
-        x = Values, y = 1, fill = Colors
-      ), color = "white", linewidth = 0.5, data = df
+    geom_rect(
+      data = df,
+      aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = fill),
+      color = "white",
+      linewidth = 0.5
     ),
     scale_fill_identity(),
     theme(
@@ -25,15 +29,14 @@ create_magnitude_scale <- function(min_value, max_value) {
       panel.background = element_blank(),
       axis.text.y = element_blank(),
       axis.ticks.y = element_blank(),
-      axis.title.y = element_blank(),
-      panel.grid.major.y = element_blank(),
-      panel.grid.minor.y = element_blank(),
-      axis.text.x.bottom = element_text(size = 14),
+      axis.title = element_blank(),
+      panel.grid = element_blank(),
       panel.border = element_blank(),
       axis.line.x = element_line(color = "black"),
-      axis.ticks.x = element_line(color = "black")
+      axis.ticks.x = element_line(color = "black"),
+      axis.text.x = element_text(size = 10),
+      plot.margin = unit(c(1,1,1,1), 'cm')
     ),
-    labs(x = "", y = ""),
     scale_y_continuous(expand = c(0, 0)),
     scale_x_continuous(
       trans = 'log10',
@@ -76,9 +79,10 @@ calculate_nudge <- function(
 }
 
 add_risk_line_and_label <- function(
-    risk_data, index, total_risks, plot_width, plot_height, size = 3
+    risk_data, index, total_risks, plot_width, plot_height, size = 3,
+    omit_bar = TRUE
     ) {
-  y_pos <- 1.5 + risk_data$loc * 0.3
+  y_pos <- 1 + risk_data$loc * 0.3
   x_pos <- risk_data$value
   name_length <- nchar(risk_data$rei_name)
 
@@ -90,7 +94,7 @@ add_risk_line_and_label <- function(
   list(
     geom_segment(
       data = risk_data,
-      aes(x = value, xend = value, y = 1.5, yend = y_pos),
+      aes(x = value, xend = value, y = as.numeric(omit_bar), yend = y_pos),
       size = 0.5,
       color = "black"
     ),
@@ -109,8 +113,7 @@ add_risk_line_and_label <- function(
       vjust = 0.5,
       segment.size = 0.5,
       segment.color = "gray50",
-      force = 1,
-      max.iterations = 5000
+      force = 1
     )
   )
 }
