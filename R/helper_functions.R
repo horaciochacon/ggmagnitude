@@ -50,17 +50,17 @@ create_magnitude_scale <- function(min_value, max_value) {
 
 calculate_nudge <- function(
     x_pos, y_pos, name_length, position, total_risks, plot_width, plot_height,
-    name_value = 0
+    name_value = 0, x_nudge = 0.75, y_nudge = 0.4
     ) {
   # Calculate base nudge in x direction (in log10 units)
-  base_nudge_x <- 0.75  # Adjust this value to control the diagonal angle
+  base_nudge_x <- x_nudge  # Adjust this value to control the diagonal angle
 
   # Adjust x nudge based on name length (longer names need more space)
   name_factor <- (name_length * name_value)  # Normalize by average name length
   adjusted_nudge_x <- base_nudge_x * (1 + name_factor)
 
   # Calculate y nudge (in plot coordinate units)
-  base_nudge_y <- 0.4  # Adjust this value to control vertical spacing
+  base_nudge_y <- y_nudge
 
   # Adjust y nudge based on position (higher positions need more space)
   position_factor <- (y_pos - 1.5) / (0.3 * total_risks)
@@ -80,15 +80,16 @@ calculate_nudge <- function(
 
 add_risk_line_and_label <- function(
     risk_data, index, total_risks, plot_width, plot_height, size = 3,
-    omit_bar = TRUE
+    omit_bar = TRUE, vertical_spacing = 0.3,
+    ...
     ) {
-  y_pos <- 1 + risk_data$loc * 0.3
+  y_pos <- 1 + risk_data$loc * vertical_spacing
   x_pos <- risk_data$value
   name_length <- nchar(risk_data$rei_name)
 
   nudge <- calculate_nudge(
     x_pos, y_pos, name_length, risk_data$position, total_risks,
-    plot_width, plot_height
+    plot_width, plot_height, ...
     )
 
   list(
@@ -112,7 +113,7 @@ add_risk_line_and_label <- function(
       ),
       vjust = 0.5,
       segment.size = 0.5,
-      segment.color = "gray50",
+      segment.color = "black",
       force = 1
     )
   )
