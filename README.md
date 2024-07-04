@@ -1,8 +1,6 @@
 # ggmagnitude: Create Visual Magnitude Plots on a Colored Scale
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/horaciochacon/ggmagnitude/workflows/R-CMD-check/badge.svg)](https://github.com/horaciochacon/ggmagnitude/actions)
-[![CRAN status](https://www.r-pkg.org/badges/version/ggmagnitude)](https://CRAN.R-project.org/package=ggmagnitude)
 [![R-CMD-check](https://github.com/horaciochacon/ggmanitude/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/horaciochacon/ggmanitude/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -16,7 +14,6 @@ You can install the development version of ggmagnitude from [GitHub](https://git
 # install.packages("devtools")
 devtools::install_github("horaciochacon/ggmagnitude")
 ```
-
 ## Usage
 
 Here's a basic example of how to use the `ggmagnitude` package:
@@ -24,6 +21,7 @@ Here's a basic example of how to use the `ggmagnitude` package:
 ```r
 library(ggmagnitude)
 ```
+
 # Create sample data
 
 ```r
