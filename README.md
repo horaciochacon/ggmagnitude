@@ -3,6 +3,7 @@
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/horaciochacon/ggmagnitude/workflows/R-CMD-check/badge.svg)](https://github.com/horaciochacon/ggmagnitude/actions)
 [![CRAN status](https://www.r-pkg.org/badges/version/ggmagnitude)](https://CRAN.R-project.org/package=ggmagnitude)
+[![R-CMD-check](https://github.com/horaciochacon/ggmanitude/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/horaciochacon/ggmanitude/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The `ggmagnitude` package provides tools to create magnitude plots, primarily using a logarithmic scale, for visual representation of data across wide-ranging orders of magnitude. These plots offer an intuitive way to compare and understand the relative scale of various data points using color gradients and positioned labels.
