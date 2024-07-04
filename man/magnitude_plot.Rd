@@ -11,27 +11,43 @@ magnitude_plot(
   font_col = NULL,
   is_log10 = TRUE,
   min_value = 10,
-  max_value = 1e+13
+  max_value = 10^12,
+  ...
 )
 }
 \arguments{
-\item{data}{A data frame containing the risk data.}
+\item{data}{A data frame containing the data to be plotted.}
 
-\item{value_col}{The name of the column containing the values (either in log10 scale or not).}
+\item{value_col}{The name of the column containing the magnitude values.}
 
-\item{name_col}{The name of the column containing the risk names.}
+\item{name_col}{The name of the column containing the labels for each data point.}
 
 \item{font_col}{The name of the column containing the font style (optional).}
 
 \item{is_log10}{Logical, indicating whether the values are already in log10 scale.}
 
-\item{min_value}{The minimum value for the x-axis (default is 1e8).}
+\item{min_value}{The minimum value for the x-axis (default is 10).}
 
 \item{max_value}{The maximum value for the x-axis (default is 1e12).}
+
+\item{...}{Additional arguments passed to internal functions.}
 }
 \value{
-A ggplot object representing the magnitude plot.
+A ggplot object representing the magnitude plot. The plot displays data points
+        on a logarithmic scale, with labels and color-coding based on magnitude.
 }
 \description{
-This function creates a magnitude plot in log10 scale to depict cumulative disability adjusted life years (DALYs) lost due to different risks.
+This function creates a magnitude plot, primarily using a logarithmic scale,
+to visually represent data across wide-ranging orders of magnitude. The plot
+uses a color gradient to depict the scale of values and positions labels for
+easy comparison.
+}
+\examples{
+\dontrun{
+data <- data.frame(
+  label = c("Value A", "Value B", "Value C"),
+  magnitude = c(1e3, 1e6, 1e9)
+)
+magnitude_plot(data, value_col = "magnitude", name_col = "label")
+}
 }

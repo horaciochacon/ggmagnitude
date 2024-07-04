@@ -1,14 +1,18 @@
-Package: magnitudeplot
-Title: Create Magnitude Plots for DALYs
+Package: ggmagnitude
+Title: Create Visual Magnitude Plots on a Colored Scale
 Version: 0.1.0
 Authors@R: person("Horacio", "Chacon Torrico", email = "hchacont@uw.edu", role = c("aut", "cre"))
-Description: Creates magnitude plots in log10 scale to depict cumulative disability adjusted life years (DALYs) lost due to different risks.
+Description: Provides tools to create magnitude plots, primarily using a logarithmic scale, 
+    for visual representation of data across wide-ranging orders of magnitude. 
+    These plots offer an intuitive way to compare and understand the relative scale 
+    of various data points using color gradients and positioned labels.
 Depends: R (>= 3.5.0)
 Imports: 
     ggplot2,
     dplyr,
     scales,
-    ggrepel
+    ggrepel,
+    rlang
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
