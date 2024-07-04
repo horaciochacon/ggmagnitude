@@ -1,22 +1,40 @@
+utils::globalVariables(c("value", "rei_name", "font", "xmin", "xmax", "ymin",
+                         "ymax", "fill", ".x"))
+
 #' Create a Magnitude Plot
 #'
-#' This function creates a magnitude plot in log10 scale to depict cumulative disability adjusted life years (DALYs) lost due to different risks.
+#' This function creates a magnitude plot, primarily using a logarithmic scale,
+#' to visually represent data across wide-ranging orders of magnitude. The plot
+#' uses a color gradient to depict the scale of values and positions labels for
+#' easy comparison.
 #'
-#' @param data A data frame containing the risk data.
-#' @param value_col The name of the column containing the values (either in log10 scale or not).
-#' @param name_col The name of the column containing the risk names.
+#' @param data A data frame containing the data to be plotted.
+#' @param value_col The name of the column containing the magnitude values.
+#' @param name_col The name of the column containing the labels for each data point.
 #' @param font_col The name of the column containing the font style (optional).
 #' @param is_log10 Logical, indicating whether the values are already in log10 scale.
-#' @param min_value The minimum value for the x-axis (default is 1e8).
+#' @param min_value The minimum value for the x-axis (default is 10).
 #' @param max_value The maximum value for the x-axis (default is 1e12).
+#' @param ... Additional arguments passed to internal functions.
 #'
-#' @return A ggplot object representing the magnitude plot.
+#' @return A ggplot object representing the magnitude plot. The plot displays data points
+#'         on a logarithmic scale, with labels and color-coding based on magnitude.
+#'
+#' @importFrom ggplot2 ggplot theme_minimal theme element_blank element_line element_text unit coord_cartesian
+#' @importFrom dplyr %>% filter mutate arrange
+#' @importFrom rlang .data sym
+#' @importFrom utils head tail
 #' @export
 #'
-#' @import ggplot2
-#' @import dplyr
-#' @import scales
-#' @import ggrepel
+#' @examples
+#' \dontrun{
+#' data <- data.frame(
+#'   label = c("Value A", "Value B", "Value C"),
+#'   magnitude = c(1e3, 1e6, 1e9)
+#' )
+#' magnitude_plot(data, value_col = "magnitude", name_col = "label")
+#' }
+
 magnitude_plot <- function(
     data, value_col, name_col, font_col = NULL, is_log10 = TRUE,
     min_value = 10, max_value = 10^12, ...

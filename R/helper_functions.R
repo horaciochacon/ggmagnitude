@@ -1,9 +1,33 @@
+#' @importFrom dplyr filter mutate arrange case_when n
+#' @importFrom rlang .data
+#' @importFrom utils head tail
+NULL
+
+utils::globalVariables(c("value", "rei_name", "font", "xmin", "xmax", "ymin",
+                         "ymax", "fill", ".x"))
+
+#' Create a Magnitude Scale
+#'
+#' This function creates a magnitude scale for use in ggplot2 plots. It generates
+#' a color-coded scale from darkgreen to yellow to darkred, representing values
+#' from 10^0 to 10^12.
+#'
+#' @param min_value Minimum value for the scale (default is 10)
+#' @param max_value Maximum value for the scale (default is 10^12)
+#'
+#' @return A list of ggplot2 objects representing the magnitude scale
+#'
+#' @importFrom ggplot2 geom_rect scale_fill_identity theme element_blank element_line element_text unit scale_y_continuous scale_x_continuous
+#' @importFrom scales trans_format math_format
+#' @importFrom grDevices colorRampPalette
+#' @keywords internal
+
 create_magnitude_scale <- function(min_value, max_value) {
   # Define the values
   values <- 10^(0:12)
 
   # Create the color palette from yellow to red
-  color_palette <- colorRampPalette(c("darkgreen", "yellow", "darkred"))(12)
+  color_palette <- grDevices::colorRampPalette(c("darkgreen", "yellow", "darkred"))(12)
 
   # Create a data frame for geom_rect
   df <- data.frame(
@@ -14,16 +38,17 @@ create_magnitude_scale <- function(min_value, max_value) {
     fill = color_palette
   )
 
-  df <- df %>% filter(xmin >=  min_value, xmax <= max_value)
+  df <- df %>%
+    dplyr::filter(xmin >=  min_value, xmax <= max_value)
 
   list(
-    geom_rect(
+    ggplot2::geom_rect(
       data = df,
-      aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = fill),
+      ggplot2::aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = fill),
       color = "white",
       linewidth = 0.5
     ),
-    scale_fill_identity(),
+    ggplot2::scale_fill_identity(),
     theme(
       legend.position = "none",
       panel.background = element_blank(),
@@ -47,6 +72,26 @@ create_magnitude_scale <- function(min_value, max_value) {
     )
   )
 }
+
+#' Calculate Label Nudge
+#'
+#' This function calculates the nudge values for positioning labels in the magnitude plot.
+#'
+#' @param x_pos X position of the data point
+#' @param y_pos Y position of the data point
+#' @param name_length Length of the label name
+#' @param position Position of the label ("left", "right", or "center")
+#' @param total_risks Total number of risks in the plot
+#' @param plot_width Width of the plot
+#' @param plot_height Height of the plot
+#' @param name_value Adjustment factor for name length (default is 0)
+#' @param x_nudge Base nudge in x direction (default is 0.75)
+#' @param y_nudge Base nudge in y direction (default is 0.4)
+#'
+#' @return A list with x and y nudge values
+#'
+#' @importFrom dplyr case_when
+#' @keywords internal
 
 calculate_nudge <- function(
     x_pos, y_pos, name_length, position, total_risks, plot_width, plot_height,
@@ -78,6 +123,27 @@ calculate_nudge <- function(
   return(list(x = nudge_x, y = nudge_y))
 }
 
+
+#' Add Risk Line and Label
+#'
+#' This function adds a line and label for a single risk to the magnitude plot.
+#'
+#' @param risk_data Data for a single risk
+#' @param index Index of the current risk
+#' @param total_risks Total number of risks in the plot
+#' @param plot_width Width of the plot
+#' @param plot_height Height of the plot
+#' @param size Size of the label text (default is 3)
+#' @param omit_bar Logical, whether to omit the vertical bar (default is TRUE)
+#' @param vertical_spacing Vertical spacing between risks (default is 0.3)
+#' @param ... Additional arguments passed to calculate_nudge()
+#'
+#' @return A list of ggplot2 objects for the risk line and label
+#'
+#' @importFrom ggplot2 geom_segment aes
+#' @importFrom ggrepel geom_text_repel
+#' @keywords internal
+
 add_risk_line_and_label <- function(
     risk_data, index, total_risks, plot_width, plot_height, size = 3,
     omit_bar = TRUE, vertical_spacing = 0.3,
@@ -93,20 +159,20 @@ add_risk_line_and_label <- function(
     )
 
   list(
-    geom_segment(
+    ggplot2::geom_segment(
       data = risk_data,
-      aes(x = value, xend = value, y = as.numeric(omit_bar), yend = y_pos),
+      ggplot2::aes(x = value, xend = value, y = as.numeric(omit_bar), yend = y_pos),
       size = 0.5,
       color = "black"
     ),
-    geom_text_repel(
+    ggrepel::geom_text_repel(
       data = risk_data,
-      aes(x = x_pos, y = y_pos, label = rei_name, fontface = font),
+      ggplot2::aes(x = x_pos, y = y_pos, label = rei_name, fontface = font),
       size = size,
       nudge_x = nudge$x,
       nudge_y = nudge$y,
       direction = "both",
-      hjust = case_when(
+      hjust = dplyr::case_when(
         risk_data$position == "left" ~ 1,
         risk_data$position == "right" ~ 0,
         risk_data$position == "center" ~ 0.5

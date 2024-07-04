@@ -1,16 +1,28 @@
-# R/prepare_data.R
-
+#' Prepare Data for Magnitude Plot
+#'
+#' This function prepares the input data for use in the magnitude plot.
+#'
+#' @param data A data frame containing the risk data.
+#' @param value_col The name of the column containing the values.
+#' @param name_col The name of the column containing the risk names.
+#' @param font_col The name of the column containing the font style (optional).
+#' @param is_log10 Logical, indicating whether the values are already in log10 scale.
+#'
+#' @return A data frame with additional columns needed for plotting.
+#'
+#' @importFrom dplyr arrange mutate rename
+#' @keywords internal
 prepare_data <- function(data, value_col, name_col, font_col, is_log10) {
   if (!is_log10) {
     data[[value_col]] <- log10(data[[value_col]])
   }
 
   data <- data %>%
-    arrange(!!sym(value_col)) %>%
-    mutate(
-      value = 10^(!!sym(value_col)),
-      loc = calculate_location(n()),
-      order = row_number()
+    dplyr::arrange(!!rlang::sym(value_col)) %>%
+    dplyr::mutate(
+      value = 10^(!!rlang::sym(value_col)),
+      loc = calculate_location(dplyr::n()),
+      order = dplyr::row_number()
     )
 
   # Calculate position (left, center, right)
