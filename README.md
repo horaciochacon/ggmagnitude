@@ -34,10 +34,18 @@ data <- data.frame(
 # Create the magnitude plot
 
 ```r
-magnitude_plot(data, value_col = "magnitude", name_col = "label")
+magnitude_plot(
+  data, 
+  value_col = "magnitude", 
+  name_col = "label", 
+  is_log10 = FALSE, 
+  size = 4
+  )
 ```
 
-This will create a magnitude plot showing the relative impact of different risks based on their DALY values.
+This will create a magnitude plot:
+
+![Magnitude Plot](man/figures/example1.png)
 
 ## Features
 
@@ -73,7 +81,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 If you use `ggmagnitude` in your research, please consider citing it:
 
 ```
-Chacon Torrico, H. (2023). ggmagnitude: Create Magnitude Plots for DALYs. R package version 0.1.0.
+Chacon Torrico, H. (2023). ggmagnitude: Create Visual Magnitude Plots on a Colored Scale. R package version 0.1.0.
 https://github.com/horaciochacon/ggmagnitude
 ```
 

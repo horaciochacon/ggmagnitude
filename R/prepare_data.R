@@ -12,7 +12,7 @@
 #'
 #' @importFrom dplyr arrange mutate rename
 #' @keywords internal
-prepare_data <- function(data, value_col, name_col, font_col, is_log10) {
+prepare_data <- function(data, value_col, name_col, font_col = NULL, is_log10) {
   if (!is_log10) {
     data[[value_col]] <- log10(data[[value_col]])
   }
