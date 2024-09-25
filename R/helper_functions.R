@@ -22,7 +22,7 @@ utils::globalVariables(c("value", "rei_name", "font", "xmin", "xmax", "ymin",
 #' @importFrom grDevices colorRampPalette
 #' @keywords internal
 
-create_magnitude_scale <- function(min_value, max_value) {
+create_magnitude_scale <- function(min_value, max_value, exp_format = TRUE) {
   # Define the values
   values <- 10^(0:12)
 
@@ -68,7 +68,11 @@ create_magnitude_scale <- function(min_value, max_value) {
       limits = c(min_value, max_value),
       breaks = values,
       expand = c(0, 0),
-      labels = scales::trans_format("log10", scales::math_format(10^.x))
+      labels = ifelse(
+        exp_format,
+        scales::trans_format("log10", scales::math_format(10^.x)),
+        scales::trans_format("log10", scales::math_format(.x))
+      )
     )
   )
 }

@@ -1,5 +1,5 @@
 utils::globalVariables(c("value", "rei_name", "font", "xmin", "xmax", "ymin",
-                         "ymax", "fill", ".x"))
+                         "ymax", "fill", ".x", "exp_format"))
 
 #' Create a Magnitude Plot
 #'
@@ -37,7 +37,7 @@ utils::globalVariables(c("value", "rei_name", "font", "xmin", "xmax", "ymin",
 
 magnitude_plot <- function(
     data, value_col, name_col, font_col = NULL, is_log10 = TRUE,
-    min_value = 10, max_value = 10^12, ...
+    min_value = 10, max_value = 10^12, exp_format = TRUE, ...
     ) {
   # Prepare data
   prepared_data <- prepare_data(data, value_col, name_col, font_col, is_log10)
@@ -48,7 +48,7 @@ magnitude_plot <- function(
 
   # Create base plot
   p <- ggplot() +
-    create_magnitude_scale(min_value, max_value)
+    create_magnitude_scale(min_value, max_value, exp_format)
 
   # Add risk lines and labels
   for (i in 1:nrow(prepared_data)) {
