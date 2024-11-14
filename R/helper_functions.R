@@ -6,22 +6,6 @@ NULL
 utils::globalVariables(c("value", "rei_name", "font", "xmin", "xmax", "ymin",
                          "ymax", "fill", ".x"))
 
-#' Create a Magnitude Scale
-#'
-#' This function creates a magnitude scale for use in ggplot2 plots. It generates
-#' a color-coded scale from darkgreen to yellow to darkred, representing values
-#' from 10^0 to 10^12.
-#'
-#' @param min_value Minimum value for the scale (default is 10)
-#' @param max_value Maximum value for the scale (default is 10^12)
-#'
-#' @return A list of ggplot2 objects representing the magnitude scale
-#'
-#' @importFrom ggplot2 geom_rect scale_fill_identity theme element_blank element_line element_text unit scale_y_continuous scale_x_continuous
-#' @importFrom scales trans_format math_format
-#' @importFrom grDevices colorRampPalette
-#' @keywords internal
-
 create_magnitude_scale <- function(min_value, max_value, exp_format = TRUE) {
   # Define the values
   values <- 10^(0:12)
@@ -39,16 +23,11 @@ create_magnitude_scale <- function(min_value, max_value, exp_format = TRUE) {
   )
 
   df <- df %>%
-    dplyr::filter(xmin >=  min_value, xmax <= max_value)
+    dplyr::filter(xmin >= min_value, xmax <= max_value)
 
+  # Change the order of elements to ensure proper layering
   list(
-    ggplot2::geom_rect(
-      data = df,
-      ggplot2::aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = fill),
-      color = "white",
-      linewidth = 0.5
-    ),
-    ggplot2::scale_fill_identity(),
+    # First set the theme to ensure proper positioning
     theme(
       legend.position = "none",
       panel.background = element_blank(),
@@ -57,11 +36,9 @@ create_magnitude_scale <- function(min_value, max_value, exp_format = TRUE) {
       axis.title = element_blank(),
       panel.grid = element_blank(),
       panel.border = element_blank(),
-      axis.line.x = element_line(color = "black"),
-      axis.ticks.x = element_line(color = "black"),
-      axis.text.x = element_text(size = 10),
       plot.margin = unit(c(1,1,1,1), 'cm')
     ),
+    # Then set the scales
     scale_y_continuous(expand = c(0, 0)),
     scale_x_continuous(
       trans = 'log10',
@@ -73,6 +50,20 @@ create_magnitude_scale <- function(min_value, max_value, exp_format = TRUE) {
         scales::trans_format("log10", scales::math_format(10^.x)),
         scales::trans_format("log10", scales::math_format(.x))
       )
+    ),
+    # Add the rectangles for the color scale
+    ggplot2::geom_rect(
+      data = df,
+      ggplot2::aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = fill),
+      color = "white",
+      linewidth = 0.5
+    ),
+    ggplot2::scale_fill_identity(),
+    # Finally add the axis line on top
+    theme(
+      axis.line.x = element_line(color = "black", linewidth = 0.5),
+      axis.ticks.x = element_line(color = "black"),
+      axis.text.x = element_text(size = 10)
     )
   )
 }
@@ -139,6 +130,7 @@ calculate_nudge <- function(
 #' @param plot_height Height of the plot
 #' @param size Size of the label text (default is 3)
 #' @param omit_bar Logical, whether to omit the vertical bar (default is TRUE)
+#' @param only_bar Logical, whether to show only the vertical bar without label (default is FALSE)
 #' @param vertical_spacing Vertical spacing between risks (default is 0.3)
 #' @param ... Additional arguments passed to calculate_nudge()
 #'
@@ -150,9 +142,9 @@ calculate_nudge <- function(
 
 add_risk_line_and_label <- function(
     risk_data, index, total_risks, plot_width, plot_height, size = 3,
-    omit_bar = TRUE, vertical_spacing = 0.3,
+    omit_bar = TRUE, only_bar = FALSE, vertical_spacing = 0.3,
     ...
-    ) {
+) {
   y_pos <- 1 + risk_data$loc * vertical_spacing
   x_pos <- risk_data$value
   name_length <- nchar(risk_data$rei_name)
@@ -160,16 +152,35 @@ add_risk_line_and_label <- function(
   nudge <- calculate_nudge(
     x_pos, y_pos, name_length, risk_data$position, total_risks,
     plot_width, plot_height, ...
-    )
+  )
 
-  list(
-    ggplot2::geom_segment(
-      data = risk_data,
-      ggplot2::aes(x = value, xend = value, y = as.numeric(omit_bar), yend = y_pos),
-      size = 0.5,
-      color = "black"
-    ),
-    ggrepel::geom_text_repel(
+  # Initialize empty list for plot elements
+  plot_elements <- list()
+
+  # Add vertical bar if not omitted
+  if (!omit_bar || only_bar) {
+    if (only_bar) {
+      # If only_bar is TRUE, draw just the vertical bar to y = 1
+      plot_elements[[1]] <- ggplot2::geom_segment(
+        data = risk_data,
+        ggplot2::aes(x = value, xend = value, y = 0, yend = 1),
+        size = 0.5,
+        color = "black"
+      )
+    } else {
+      # Regular vertical bar
+      plot_elements[[1]] <- ggplot2::geom_segment(
+        data = risk_data,
+        ggplot2::aes(x = value, xend = value, y = 0, yend = y_pos),
+        size = 0.5,
+        color = "black"
+      )
+    }
+  }
+
+  # Add label and connecting line if not only showing bar
+  if (!only_bar) {
+    plot_elements[[length(plot_elements) + 1]] <- ggrepel::geom_text_repel(
       data = risk_data,
       ggplot2::aes(x = x_pos, y = y_pos, label = rei_name, fontface = font),
       size = size,
@@ -186,7 +197,9 @@ add_risk_line_and_label <- function(
       segment.color = "black",
       force = 1
     )
-  )
+  }
+
+  return(plot_elements)
 }
 
 

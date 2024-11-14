@@ -39,22 +39,23 @@ prepare_data <- function(data, value_col, name_col, font_col = NULL, is_log10) {
 }
 
 calculate_location <- function(n) {
-  if (n %% 2 == 0) {  # Even number of risks
+  if (n %% 2 == 0) { # Even number of risks
     mid <- n / 2
     c(1:mid, mid:1)
-  } else {  # Odd number of risks
+  } else { # Odd number of risks
     mid <- ceiling(n / 2)
-    c(1:mid, (mid-1):1)
+    c(1:mid, (mid - 1):1)
   }
 }
 
 calculate_position <- function(n, order) {
   if (n %% 2 == 0) {
     # If even number of risks, split into left and right
-    ifelse(order <= n/2, "left", "right")
+    ifelse(order <= n / 2, "left", "right")
   } else {
     # If odd number of risks, middle one is center
-    ifelse(order < ceiling(n/2), "left",
-           ifelse(order == ceiling(n/2), "center", "right"))
+    ifelse(order < ceiling(n / 2), "left",
+      ifelse(order == ceiling(n / 2), "center", "right")
+    )
   }
 }
